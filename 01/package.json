@@ -1,0 +1,16 @@
+{
+  "name": "nodejs-basics",
+  "version": "1.0.0",
+  "description": "Node.js basics Fullstack Development",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.mediacube.at/fhs45907/nodejs-basics.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
