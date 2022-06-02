@@ -3,16 +3,17 @@
 
   let url = ''
   let bookmarks = [];
+  const API_URL = 'https://express-bergerberger.herokuapp.com/api/bookmarks/'
 
   onMount(async () => {
-    const res = await fetch('http://localhost:3001/api/bookmarks')
+    const res = await fetch(API_URL)
     bookmarks = await res.json()
   })
 
   async function handleAddClick() {
     if (url === '') return;
 
-    const res = await fetch('http://localhost:3001/api/bookmarks/new', {
+    const res = await fetch(API_URL + 'new', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url })
@@ -24,7 +25,7 @@
   }
 
   async function deleteBookmark(id) {
-    const res = await fetch('http://localhost:3001/api/bookmarks/' + id, {
+    const res = await fetch(API_URL + id, {
       method: 'DELETE',
     })
 
@@ -45,7 +46,7 @@
       return bookmark
     })
 
-    const res = await fetch('http://localhost:3001/api/bookmarks/' + id, {
+    const res = await fetch(API_URL + id, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ like: !liked })
