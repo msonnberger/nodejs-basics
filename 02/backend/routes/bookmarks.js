@@ -52,10 +52,37 @@ router.patch('/:id', async (req, res, next) => {
     const bookmark = bookmarks.find((bookmark) => bookmark.id === id);
     bookmark.liked = like;
 
-    await writeFile('./bookmarks.json', JSON.stringify(newBookmarks));
+    await writeFile('./bookmarks.json', JSON.stringify(bookmarks));
 
-    res.json(linkPreview);
-  } catch {}
+    res.json(bookmark);
+  } catch {
+    next({
+      status: 500,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Something went wrong :(',
+    });
+  }
+});
+
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const bookmarksFile = await readFile('./bookmarks.json');
+    const bookmarks = JSON.parse(bookmarksFile);
+    const index = bookmarks.findIndex((bookmark) => bookmark.id === id);
+    bookmarks.splice(index, 1);
+
+    await writeFile('./bookmarks.json', JSON.stringify(bookmarks));
+
+    res.json(true);
+  } catch {
+    next({
+      status: 500,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Something went wrong :(',
+    });
+  }
 });
 
 module.exports = router;
