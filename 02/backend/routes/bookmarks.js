@@ -22,6 +22,7 @@ router.post('/new', async (req, res, next) => {
 
   try {
     const { url } = req.body;
+    console.log(req.body);
     const apiRes = await fetch(`${API_URL}?key=${API_KEY}&q=${url}`);
     const linkPreview = await apiRes.json();
     linkPreview.id = crypto.randomUUID();

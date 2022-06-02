@@ -1,42 +1,53 @@
 <script>
+  import { onMount } from "svelte";
+
   let url = ''
-  let previews = [
-    {
-       "title":"Google",
-       "description":"Search webpages, images, videos and more.",
-       "image":"https://www.google.com/images/logo.png",
-       "url":"https://www.google.com",
-       "id": "4579271b-a982-41b6-8b17-51707068a6c0"
-    },
-    {
-       "title":"Google",
-       "description":"Search webpages, images, videos and more.",
-       "image":"https://www.google.com/images/logo.png",
-       "url":"https://www.google.com",
-       "id": "72bd04e4-6cb3-47a1-bdb6-1d9561a546ba"
-    },
-    {
-       "title":"Google",
-       "description":"Search webpages, images, videos and more.",
-       "image":"https://www.google.com/images/logo.png",
-       "url":"https://www.google.com",
-       "id": "50461dc1-9b99-40e0-b32d-9afdffda644e"
+  let bookmarks = [];
+
+  onMount(async () => {
+    const res = await fetch('http://localhost:3001/api/bookmarks')
+    bookmarks = await res.json()
+  })
+
+  async function handleAddClick() {
+    if (url === '') return;
+
+    const res = await fetch('http://localhost:3001/api/bookmarks/new', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    })
+
+    url = '';
+    const bookmark = await res.json();
+    bookmarks = [...bookmarks, bookmark]
+  }
+
+  async function deleteBookmark(id) {
+    const res = await fetch('http://localhost:3001/api/bookmarks/' + id, {
+      method: 'DELETE',
+    })
+
+    const succeeded = await res.json()
+
+    if (succeeded) {
+      bookmarks = bookmarks.filter((bookmark) => bookmark.id !== id)
     }
-  ]
+  }
 </script>
 
 <div class="add-link-form">
   <input bind:value={url} type="text">
-  <button class="add-btn">Add</button>
+  <button on:click={handleAddClick} class="add-btn">Add</button>
 </div>
 
 <ul>
-  {#each previews as {title, description, image, url, id}}
+  {#each bookmarks as {title, description, image, url, id}}
     <li>
       <div>
         <img src={image} alt={title}>
         <button>Like</button>
-        <button>Delete</button>
+        <button on:click={() => deleteBookmark(id)}>Delete</button>
       </div>
       <h2>{title}</h2>
       <p>{description}</p>
@@ -58,13 +69,21 @@
 </svelte:head>
 
 <style>
+  img {
+    max-width: 20rem;
+    height: 15rem;
+    object-fit: contain;
+  }
+
   ul {
     list-style-type: none;
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
   }
 
   li {
+    max-width: 20rem;
     box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
     border-radius: 5px;
     padding: 1rem;
