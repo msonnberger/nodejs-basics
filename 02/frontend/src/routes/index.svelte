@@ -34,6 +34,35 @@
       bookmarks = bookmarks.filter((bookmark) => bookmark.id !== id)
     }
   }
+
+  async function likeBookmark(id) {
+    const { liked } = bookmarks.find((bookmark) => bookmark.id === id)
+    bookmarks = bookmarks.map((bookmark) => {
+      if (bookmark.id === id) {
+        bookmark.liked = !liked
+      }
+
+      return bookmark
+    })
+
+    const res = await fetch('http://localhost:3001/api/bookmarks/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ like: !liked })
+    })
+
+    const succeeded = await res.json()
+
+    if (!succeeded) {
+      bookmarks = bookmarks.map((bookmark) => {
+        if (bookmark.id === id) {
+          bookmark.liked = liked
+        }
+
+        return bookmark
+      })
+    }
+  }
 </script>
 
 <div class="add-link-form">
@@ -42,12 +71,14 @@
 </div>
 
 <ul>
-  {#each bookmarks as {title, description, image, url, id}}
+  {#each bookmarks as {title, description, image, url, liked, id}}
     <li>
-      <div>
+      <div class="header">
         <img src={image} alt={title}>
-        <button>Like</button>
-        <button on:click={() => deleteBookmark(id)}>Delete</button>
+        <div class="actions">
+          <button on:click={() => likeBookmark(id)} class:liked="{liked === true}">❤️</button>
+          <button on:click={() => deleteBookmark(id)}>🗑️</button>
+        </div>
       </div>
       <h2>{title}</h2>
       <p>{description}</p>
@@ -73,6 +104,40 @@
     max-width: 20rem;
     height: 15rem;
     object-fit: contain;
+  }
+
+  .header {
+    position: relative;
+  }
+
+  .actions {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+
+  .actions:hover {
+    opacity: 1;
+  }
+
+  .actions button {
+    font-size: 30px;
+    cursor: pointer;
+    display: block;
+    padding: .6em;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: none;
+  }
+
+  button.liked {
+    background-color: rgb(255, 84, 84);
   }
 
   ul {
