@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
   return knex.schema.createTable('bookmarks', (table) => {
-    table.uuid('id').primary();
+    table.increments('id').primary();
     table.string('title');
     table.string('description');
     table.string('url');

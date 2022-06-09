@@ -21,7 +21,7 @@
 
     url = '';
     const bookmark = await res.json();
-    bookmarks = [...bookmarks, bookmark]
+    bookmarks = [bookmark, ...bookmarks]
   }
 
   async function deleteBookmark(id) {
