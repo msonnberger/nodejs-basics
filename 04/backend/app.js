@@ -8,6 +8,12 @@ const cors = require('cors');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const bookmarksRouter = require('./routes/bookmarks');
+const { Model } = require('objection');
+const Knex = require('knex');
+const knexConfig = require('./knexfile');
+
+const knex = Knex(knexConfig);
+Model.knex(knex);
 
 var app = express();
 
